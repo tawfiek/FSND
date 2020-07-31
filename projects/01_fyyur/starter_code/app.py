@@ -61,8 +61,11 @@ class Venue(db.Model):
     seeking_talent = db.Column(db.Boolean)
 
     # ******************* Relationships ******************* #
-    genres = db.relationship('Genre', secondary=venue_genres, backref=db.backref('genres', lazy=True))
-    shows = db.relationship('Show', backref='shows', lazy=True)
+    genres = db.relationship('Genre', secondary=venue_genres, backref=db.backref('venue_genres', lazy=True))
+    shows = db.relationship('Show', backref='venue_shows', lazy=True)
+
+    def __repr__(self):
+        return f'<Venue id: {self.id}, name: {self.name}, city: {self.city}>'
 
 
 class Artist(db.Model):
@@ -81,8 +84,8 @@ class Artist(db.Model):
 
     # ******************* Relationships ******************* #
 
-    genres = db.relationship('Genre', secondary=artist_genres, backref=db.backref('genres', lazy=True))
-    shows = db.relationship('Show', backref='shows', lazy=True)
+    genres = db.relationship('Genre', secondary=artist_genres, backref=db.backref('artist_genres', lazy=True))
+    shows = db.relationship('Show', backref='artist_shows', lazy=True)
 
 
 class Show(db.Model):
@@ -103,6 +106,9 @@ class City(db.Model):
 
     city_artist = db.relationship('Artist', backref='city', lazy=True)
     city_venue = db.relationship('Venue', backref='city', lazy=True)
+
+    def __repr__(self):
+        return f'<City id: {self.id}, name: {self.name}, state: {self.state}>'
 
 
 class Genre (db.Model):
@@ -142,30 +148,30 @@ def index():
 
 @app.route('/venues')
 def venues():
-    # TODO: replace with real venues data.
-    #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data = [{
-        "city": "San Francisco",
-        "state": "CA",
-        "venues": [{
-            "id": 1,
-            "name": "The Musical Hop",
-            "num_upcoming_shows": 0,
-        }, {
-            "id": 3,
-            "name": "Park Square Live Music & Coffee",
-            "num_upcoming_shows": 1,
-        }]
-    }, {
-        "city": "New York",
-        "state": "NY",
-        "venues": [{
-            "id": 2,
-            "name": "The Dueling Pianos Bar",
-            "num_upcoming_shows": 0,
-        }]
-    }]
-    return render_template('pages/venues.html', areas=data);
+    all_venues = Venue.query.all()
+    data = []
+
+    for venue in all_venues:
+        item_index = next((i for i, item in enumerate(data) if venue.city.name == item.name), None)
+        num_of_upcoming_shows = Show.query.filter((Show.venue_id == venue.id) & (Show.start_time > datetime.now())).count()
+
+        venue_item = {
+            'id': str(venue.id),
+            'name': venue.name,
+            "num_upcoming_shows": num_of_upcoming_shows,
+        }
+
+        if item_index:
+            data[item_index].venues.pop(venue_item)
+        else:
+            city_item = {
+                'city': venue.city.name,
+                'state': venue.city.state,
+                'venues': [venue_item]
+            }
+
+            data.append(city_item)
+    return render_template('pages/venues.html', areas=data)
 
 
 @app.route('/venues/search', methods=['POST'])
