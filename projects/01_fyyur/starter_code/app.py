@@ -253,7 +253,6 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-    # TODO: insert form data as a new Venue record in the db, instead
 
     data = request.form
     genres = data.getlist('genres')
@@ -435,13 +434,42 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     # called upon submitting the new artist listing form
-    # TODO: insert form data as a new Venue record in the db, instead
-    # TODO: modify data to be the data object returned from db insertion
+
+    data = request.form
+    genres = data.getlist('genres')
+    try:
+        city = City.query.filter_by(name=data['city'].strip().lower()).first()
+
+        if city is None:
+            new_city = City(name=data['city'].strip().lower(), state=data['state'])
+            db.session.add(new_city)
+            city = City.query.filter_by(name=data['city'].strip().lower()).first()
+
+        new_artist = Artist(name=data['name'],
+                          city_id=city.id,
+                          facebook_link=data['facebook_link'],
+                          phone=data['phone'])
+        for item in genres:
+            genre = Genre.query.filter_by(name=item).first()
+            if genre:
+                new_artist.genres.append(genre)
+            else:
+                new_artist.genres.append(Genre(name=item))
+
+        db.session.add(new_artist)
+        db.session.commit()
+        flash('Artist ' + request.form['name'] + ' was successfully listed!')
+
+    except:
+        db.session.rollback()
+        flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+
+    finally:
+        db.session.close()
+
 
     # on successful db insert, flash success
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
     # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
     return render_template('pages/home.html')
 
 
