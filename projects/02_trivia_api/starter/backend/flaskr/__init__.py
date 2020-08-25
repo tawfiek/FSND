@@ -143,13 +143,13 @@ def create_app(test_config=None):
             body = request.get_json()
             category = body['quiz_category']
             previous_questions = body['previous_questions']
-            res_boy = get_random_question(category['id'], previous_questions)
+            res_boy = get_random_question(int(category['id']), previous_questions)
             previous_questions.append(res_boy['question']['id'])
             return jsonify(res_boy)
         except:
             abort(422)
 
-    def get_random_question(cat_id: int, prev_questions):
+    def get_random_question(cat_id, prev_questions):
         if cat_id > 0:
             questions = Question.query.order_by('id') \
                 .filter_by(category=cat_id).all()

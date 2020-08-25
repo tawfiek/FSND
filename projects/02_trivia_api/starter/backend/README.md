@@ -72,20 +72,77 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 Endpoints
 GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/questions'
+POST '/questions'
+DELETE '/questions/<int:question_id>'
+POST '/quizzes'
+
 
 GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Returns: An object with a categories, that contains a object of id: category_string key:value pairs, and success, a boolean that discribe the status of the call
+
+{
+    "success": true,
+    "categories": {
+        ...
+        "1": "art",
+        ...
+    }
+}
+
+
+GET '/questions'
+
+- Fetches an array of questions and ictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+- Request Arguments: page => It is an integer number of page you want to get. 
+- Returns: An object with a categories, that contains a object of id: category_string key:value pairs, success, a boolean that discribe the status of the call and total_questions, that contain the number of returned questions, questions, an array of questions , current_category, that is 1 by defualt
+
+
+{
+    "categories": {1: "Science", 2: "Art", 3: "Geography", 4: "History", 5: "Entertainment", 6: "Sports"}
+    "current_category": 1
+    "questions": [
+        ...
+        {answer: "Apollo 13", category: 5, difficulty: 4, id: 2}
+        ...
+    ]
+    "success": true
+    "total_questions": 19
+}
+
+
+POST '/questions'
+
+- Adding a new question
+- Request Arguments: None
+- Request Body: { 
+    "answer": "adsfasd"
+    "category": "4"
+    "difficulty": 1
+    "question": "asdasd"
+}
+- Returns: the new questions that has been added successfully
+{ 
+    "id": 26,
+    "answer": "adsfasd"
+    "category": "4"
+    "difficulty": 1
+    "question": "asdasd"
+}
+
+
+DELETE '/questions/<int:question_id>'
+
+- Deleting the question that given the the id for 
+- Request Arguments: question_id => the id of thae question needs to be deleted
+- Returns: An object that contains a single key success, a boolean that discribe the status of the call
+
+{"success": true} 
+
+POST '/quizzes'
+
 
 ```
 
@@ -98,3 +155,6 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+
+        
+   
