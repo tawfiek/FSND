@@ -141,9 +141,29 @@ DELETE '/questions/<int:question_id>'
 
 {"success": true} 
 
+
 POST '/quizzes'
 
-
+- Get the next question in the quiz
+- Request Arguments: None
+- Request Body: {
+    "previous_questions": [... 17, ...]
+    "0": 17
+    "quiz_category": {type: "Art", id: "2"}
+    "id": "2"
+    "type": "Art"
+}
+- Returns: An object that contains forceEnd, a boolean that indecate the end of the quiz and question 
+{
+    forceEnd: false
+    question: {
+        "answer": "asdasd"
+        "category": 2
+        "difficulty": 3
+        "id": 25
+        "question": "asdasd"
+    }
+}
 ```
 
 
