@@ -100,14 +100,8 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertIsNotNone(data['question'])
+        self.assertIsNotNone(data['questions'])
 
-    def test_422_delete_question(self):
-        result = self.client().delete('/questions/1000')
-        data = json.loads(result.data)
-
-        self.assertEqual(result.status_code, 422)
-        self.assertEqual(data['success'], True)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
