@@ -170,12 +170,6 @@ def create_app(test_config=None):
             'forceEnd': no_of_questions == len(prev_questions) + 1
         }
 
-    ''' 
-  @TODO: 
-  Create error handlers for all expected errors 
-  including 404 and 422. 
-  '''
-
     @app.errorhandler(400)
     def bad_request():
         return jsonify({
@@ -185,7 +179,7 @@ def create_app(test_config=None):
         }), 400
 
     @app.errorhandler(404)
-    def bad_request():
+    def not_found():
         return jsonify({
             "success": False,
             "message": 'Resources not found ',
@@ -193,7 +187,7 @@ def create_app(test_config=None):
         }), 404
 
     @app.errorhandler(422)
-    def bad_request():
+    def unprocessable():
         return jsonify({
             "success": False,
             "message": 'Unprocessable entity',
