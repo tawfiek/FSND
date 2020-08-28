@@ -164,7 +164,27 @@ POST '/quizzes'
         "question": "asdasd"
     }
 }
+
+
 ```
+
+##Error Handling 
+
+Errors are returned as JSON object in the dollowing format: 
+
+```json
+ {
+      "success": false,
+      "message": "Resources not found",
+      "error": 404
+ }
+```
+
+The API will return three error types when request fial:
+
+* 400: Bad Request
+* 422: Unprocessable entity
+* 404: Resources not found
 
 
 ## Testing
