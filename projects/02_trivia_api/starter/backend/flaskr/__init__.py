@@ -208,4 +208,12 @@ def create_app(test_config=None):
             "error": 422,
         }), 422
 
+    @app.errorhandler(500)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "message": 'Unexpected Error',
+            "error": 500,
+        }), 500
+
     return app
