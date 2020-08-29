@@ -109,9 +109,9 @@ def create_app(test_config=None):
     def search_questions():
         body = request.get_json()
         search_term = body['searchTerm']
-        search = "%{}%".format(search_term.lower())
+        search = "%{}%".format(search_term)
         questions = Question.query \
-            .filter(db.func.lower(Question.question).like(search)).all()
+            .filter(db.func.lower(Question.question).ilike(search)).all()
         print('this is the q => ', len(questions) == 0)
 
         if len(questions) == 0:
