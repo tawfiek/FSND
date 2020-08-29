@@ -107,42 +107,37 @@ def create_app(test_config=None):
 
     @app.route('/questions-search', methods=['POST'])
     def search_questions():
-        try:
-            body = request.get_json()
-            search_term = body['searchTerm']
-            search = "%{}%".format(search_term.lower())
-            questions = Question.query \
-                .filter(db.func.lower(Question.question).like(search)).all()
-            formatted_questions = [question.format() for question in questions]
+        body = request.get_json()
+        search_term = body['searchTerm']
+        search = "%{}%".format(search_term.lower())
+        questions = Question.query \
+            .filter(db.func.lower(Question.question).like(search)).all()
+        print('this is the q => ', len(questions) == 0)
 
-            if len(formatted_questions) == 0:
-                abort(404)
+        if len(questions) == 0:
+            abort(404)
 
-            return jsonify({
-                'questions': formatted_questions,
-                'totalQuestions': len(formatted_questions),
-                'currentCategory': 1
-            })
+        formatted_questions = [question.format() for question in questions]
 
-        except:
-            abort(400)
+        return jsonify({
+            'questions': formatted_questions,
+            'totalQuestions': len(formatted_questions),
+            'currentCategory': 1
+        })
 
     @app.route('/categories/<int:cat_id>/questions')
     def get_questions_by_cat_id(cat_id):
-        try:
-            questions = Question.query.filter_by(category=cat_id).all()
-            formatted_questions = [question.format() for question in questions]
+        questions = Question.query.filter_by(category=cat_id).all()
+        formatted_questions = [question.format() for question in questions]
 
-            if len(formatted_questions) == 0:
-                abort(404)
+        if len(formatted_questions) == 0:
+            abort(404)
 
-            return jsonify({
-                'questions': formatted_questions,
-                'totalQuestions': len(formatted_questions),
-                'currentCategory': cat_id
-            })
-        except:
-            abort(422)
+        return jsonify({
+            'questions': formatted_questions,
+            'totalQuestions': len(formatted_questions),
+            'currentCategory': cat_id
+        })
 
     @app.route('/quizzes', methods=['POST'])
     def play_quiz():

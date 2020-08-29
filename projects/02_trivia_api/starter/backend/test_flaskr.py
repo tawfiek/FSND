@@ -61,12 +61,16 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
 
-    def test_delete_questions_route(self):
-        res = self.client().delete('/questions/1')
-        data = json.loads(res.data)
+        req_body = {
+            'question': '',
+            'answer': '',
+            'category': '1',
+            'difficulty': '2'
+        }
 
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
+        res = self.client().post('/questions', json=req_body)
+
+        self.assertEqual(res.status_code, 422)
 
     def test_delete_questions_route(self):
         res = self.client().delete('/questions/1')
@@ -84,6 +88,9 @@ class TriviaTestCase(unittest.TestCase):
         self.assertGreater(len(data['questions']), 0)
         self.assertEqual(len(data['questions']), data['totalQuestions'])
 
+        res = self.client().post('/questions-search', json={'searchTerm': 'Not found question !!'})
+        self.assertEqual(res.status_code, 404)
+
     def test_get_questions_by_cat_id(self):
         res = self.client().get('/categories/1/questions')
 
@@ -94,6 +101,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(len(data['questions']), data['totalQuestions'])
         self.assertEqual(data['currentCategory'], 1)
 
+        res = self.client().get('/categories/1000/questions')
+
+        self.assertEqual(res.status_code, 404)
+
     def test_play_quiz(self):
         res = self.client().get('/categories/1/questions')
 
@@ -101,6 +112,10 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertIsNotNone(data['questions'])
+
+        res = self.client().get('/categories/1000/questions')
+
+        self.assertEqual(res.status_code, 404)
 
 
 # Make the tests conveniently executable
