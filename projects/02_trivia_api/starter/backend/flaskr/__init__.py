@@ -71,9 +71,16 @@ def create_app(test_config=None):
         elif request.method == 'POST':
             try:
                 body = request.get_json()
+                question = body['question']
+                answer = body['answer']
+                category = body['category']
+                difficulty = body['difficulty']
 
-                q = Question(question=body['question'],
-                             answer=body['answer'],
+                if len(question) == 0 or len(answer) == 0 or category is None or difficulty is None:
+                    abort(422)
+
+                q = Question(question=question.strip(),
+                             answer=answer.strip(),
                              category=body['category'],
                              difficulty=body['difficulty'])
 
@@ -171,7 +178,7 @@ def create_app(test_config=None):
         }
 
     @app.errorhandler(400)
-    def bad_request():
+    def bad_request(error):
         return jsonify({
             "success": False,
             "message": 'Bad request',
@@ -179,7 +186,7 @@ def create_app(test_config=None):
         }), 400
 
     @app.errorhandler(404)
-    def not_found():
+    def not_found(error):
         return jsonify({
             "success": False,
             "message": 'Resources not found ',
@@ -187,7 +194,7 @@ def create_app(test_config=None):
         }), 404
 
     @app.errorhandler(422)
-    def unprocessable():
+    def unprocessable(error):
         return jsonify({
             "success": False,
             "message": 'Unprocessable entity',
