@@ -61,6 +61,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
 
+    def test_post_questions_route_422(self):
         req_body = {
             'question': '',
             'answer': '',
@@ -91,6 +92,11 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().post('/questions-search', json={'searchTerm': 'Not found question !!'})
         self.assertEqual(res.status_code, 404)
 
+    def test_search_questions_404(self):
+
+        res = self.client().post('/questions-search', json={'searchTerm': 'Not found question !!'})
+        self.assertEqual(res.status_code, 404)
+
     def test_get_questions_by_cat_id(self):
         res = self.client().get('/categories/1/questions')
 
@@ -101,6 +107,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(len(data['questions']), data['totalQuestions'])
         self.assertEqual(data['currentCategory'], 1)
 
+    def test_get_questions_by_cat_id_404(self):
         res = self.client().get('/categories/1000/questions')
 
         self.assertEqual(res.status_code, 404)
@@ -113,6 +120,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIsNotNone(data['questions'])
 
+        res = self.client().get('/categories/1000/questions')
+
+        self.assertEqual(res.status_code, 404)
+
+    def test_play_quiz_404(self):
         res = self.client().get('/categories/1000/questions')
 
         self.assertEqual(res.status_code, 404)
