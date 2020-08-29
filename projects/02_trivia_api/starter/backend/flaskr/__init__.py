@@ -151,12 +151,12 @@ def create_app(test_config=None):
             category = body['quiz_category']
             previous_questions = body['previous_questions']
             res_boy = get_random_question(int(category['id']), previous_questions)
-            previous_questions.append(res_boy['question']['id'])
             return jsonify(res_boy)
         except:
             abort(422)
 
     def get_random_question(cat_id, prev_questions):
+
         if cat_id > 0:
             questions = Question.query.order_by('id') \
                 .filter_by(category=cat_id).all()
@@ -166,15 +166,27 @@ def create_app(test_config=None):
         formatted_questions = [q.format() for q in questions]
         no_of_questions = len(formatted_questions)
         number = random.randint(0, no_of_questions - 1)
+        question_to_send = {}
 
         if len(prev_questions) < no_of_questions:
+
+            # Check if the random number that was generated was taken before and change it.
             for p in prev_questions:
                 while formatted_questions[number]['id'] == p:
                     number = random.randint(0, no_of_questions - 1)
+            #  #########################################################
+
+        else:
+            number = None
+
+        if number is not None:
+            question_to_send = formatted_questions[number]
+            prev_questions.append(formatted_questions[number]['id'])
 
         return {
-            'question': formatted_questions[number],
-            'forceEnd': no_of_questions == len(prev_questions) + 1
+            'question': question_to_send,
+            'forceEnd': no_of_questions >= len(prev_questions),
+            "previous_questions": prev_questions
         }
 
     @app.errorhandler(400)
