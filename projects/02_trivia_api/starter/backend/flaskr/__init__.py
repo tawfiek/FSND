@@ -161,7 +161,7 @@ def create_app(test_config=None):
         formatted_questions = [q.format() for q in questions]
         no_of_questions = len(formatted_questions)
         number = random.randint(0, no_of_questions - 1)
-        question_to_send = {}
+        question_to_send = None
 
         if len(prev_questions) < no_of_questions:
 
