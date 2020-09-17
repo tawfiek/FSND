@@ -37,7 +37,10 @@ def get_all_drinks():
         formatted_drinks = [drink.short() for drink in drinks]
 
         if len(formatted_drinks) == 0:
-            abort(404)
+            return json.dumps({
+                'success': False,
+                'error': 'No Drinks Available'
+            }), 404
 
         res = {"success": True, "drinks": formatted_drinks}
         return jsonify(res)
@@ -64,7 +67,10 @@ def get_all_drinks_details():
         formatted_drinks = [drink.long() for drink in drinks]
 
         if len(formatted_drinks) == 0:
-            abort(404)
+            return json.dumps({
+                'success': False,
+                'error': 'No Drinks Available'
+            }), 404
 
         res = {"success": True, "drinks": formatted_drinks}
         return jsonify(res)
@@ -92,9 +98,15 @@ def add_new_drink():
         recipe = body.get('recipe', None)
 
         if title is None:
-            abort(400)
+            return json.dumps({
+                'success': False,
+                'error': 'Title is required'
+            }), 400
         if recipe is None:
-            abort(400)
+            return json.dumps({
+                'success': False,
+                'error': 'One recipe at least  is required'
+            }), 400
 
         drink = Drink(title=title, recipe=json.dumps(recipe))
         drink.insert()
@@ -128,7 +140,10 @@ def patch_drinks(id):
         drink = Drink.query.filter_by(id=id).one_or_none()
 
         if drink is None:
-            abort(404)
+            return json.dumps({
+                'success': False,
+                'error': 'No Drinks Available for given id'
+            }), 404
         if title is not None:
             drink.title = title
         if recipe is not None:
@@ -159,7 +174,10 @@ def delete_drinks(id):
         drink = Drink.query.filter_by(id=id).one_or_none()
 
         if drink is None:
-            abort(404)
+            return json.dumps({
+                'success': False,
+                'error': 'No Drinks Available'
+            }), 404
 
         drink.delete()
         return jsonify({"success": True, "delete": id})
