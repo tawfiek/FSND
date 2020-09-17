@@ -30,7 +30,7 @@ CORS(app)
 
 
 @app.route('/drinks',  methods=['GET'])
-@requires_auth()
+@requires_auth('get:drinks')
 def get_all_drinks():
     try:
         drinks = Drink.query.all()
