@@ -24,7 +24,7 @@ export class AuthService {
     let link = 'https://';
     link += this.url + '.auth0.com';
     link += '/authorize?';
-    // link += 'audience=' + this.audience + '&';
+    link += 'audience=' + this.audience + '&';
     link += 'response_type=token&';
     link += 'client_id=' + this.clientId + '&';
     link += 'redirect_uri=' + this.callbackURL + callbackPath;
@@ -35,6 +35,7 @@ export class AuthService {
   check_token_fragment() {
     // parse the fragment
     const fragment = window.location.hash.substr(1).split('&')[0].split('=');
+    console.log('#DEBUG => token fragments ', window.location.hash, 'service= ', this.audience, 'URL= ', this.build_login_link(''));
     // check if the fragment includes the access token
     if ( fragment[0] === 'access_token' ) {
       // add the access token to the jwt
@@ -63,6 +64,7 @@ export class AuthService {
   }
 
   decodeJWT(token: string) {
+    console.log('#DEBUG => token: ', token)
     const jwtservice = new JwtHelperService();
     this.payload = jwtservice.decodeToken(token);
     return this.payload;

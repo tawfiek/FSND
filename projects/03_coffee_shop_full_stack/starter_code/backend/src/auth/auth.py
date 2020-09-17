@@ -1,13 +1,14 @@
 import json
 
-from flask import request, _request_ctx_stack, abort
+from flask import request, abort
 from functools import wraps
-from jose import jwt
 from urllib.request import urlopen
+from jose import jwt
+
 
 AUTH0_DOMAIN = 'personal-tawfiek.us.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'dev'
+API_AUDIENCE = 'coffeapi'
 
 # AuthError Exception
 '''
@@ -55,20 +56,10 @@ def get_token_auth_header():
     return jwt
 
 
-'''
-@TODO implement check_permissions(permission, payload) method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-        payload: decoded jwt payload
-
-    it should raise an AuthError if permissions are not included in the payload
-        !!NOTE check your RBAC settings in Auth0
-    it should raise an AuthError if the requested permission string is not in the payload permissions array
-    return true otherwise
-'''
-
-
 def check_permissions(permission, payload):
+    if permission is None or (permission == ''):
+        return True
+
     if 'permissions' not in payload:
         raise AuthError({
             'code': 'invalid_claims',
@@ -80,6 +71,7 @@ def check_permissions(permission, payload):
             'code': 'unauthorized',
             'description': 'Permission not found.'
         }, 403)
+
     return True
 
 
@@ -141,14 +133,10 @@ def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            try:
-                token = get_token_auth_header()
-                payload = verify_decode_jwt(token)
-                check_permissions(permission, payload)
-                return f(payload, *args, **kwargs)
-            except:
-                abort(401)
-
+            token = get_token_auth_header()
+            payload = verify_decode_jwt(token)
+            check_permissions(permission, payload)
+            return f(*args, **kwargs)
         return wrapper
 
     return requires_auth_decorator
