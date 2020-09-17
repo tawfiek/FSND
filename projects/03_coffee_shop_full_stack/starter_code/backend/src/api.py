@@ -33,7 +33,6 @@ CORS(app)
 def get_all_drinks():
     try:
         drinks = Drink.query.all()
-        print('Drinks => ', len(drinks))
 
         formatted_drinks = [drink.short() for drink in drinks]
 
@@ -61,7 +60,6 @@ def get_all_drinks():
 def get_all_drinks_details():
     try:
         drinks = Drink.query.all()
-        print('Drinks => ', len(drinks))
 
         formatted_drinks = [drink.long() for drink in drinks]
 
